@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // toString() vs valueOf()
+    // 如果一个对象它的toString() 和 valueOf()方法均存在时，到需要调用的时候，引用哪一个方法？
+    //这个对象是一个函数
+    function fn() {
+      return 20;
+    }
+    console.log(fn + 10); // function fn() {return 20;}10
+    console.log(fn + 'hello');// function fn() {return 20;}hello
+
+    fn.toString = function () {
+      return 10;
+    }
+    console.log(fn + 10); // 20
+    console.log(fn + 'hello'); //10hello
+
+    fn.valueOf = function () {
+      return 5;
+    }
+
+    console.log(fn + 10);// 15
+    console.log(fn + 'hello');//5hello
+// 输出结果分别是多少？
+/**
+当函数fn用+连接一个字符串或者是数字的时候，如果我们没有重新定义valueOf和toString，其隐式转换会  调用默认的toString()   方法，将函数本身内容作为字符串返回
+
+如果我们自己重新定义toString/valueOf方法，那么其转换会按照我们的定义来，其中valueOf比toString优先级更高
+
+进行运算操作的时候 * -/+ > < == ===  
+- 如果同时有valueOf和toString 优先执行valueOf 如果只有一方 直接执行
+- 如果没有valueOf和toString 调用默认的toString() 
+
+*/
+// 没有valueoOf和toString
+var x1 = {
+}
+
+console.log(x1); // 返回对象本身{}
+console.log(x1+1); //[object Object]1
+console.log(x1+'zfc');// [object Object]zfc
+console.log(x1+true); // [object Object]true
+
+var x = {
+  toString:function(){
+    return '执行string'
+  },
+  valueOf:function(){
+    return '执行valueOf '
+  }
+}
+
+console.log(x); // 返回对象本身{}
+//alert(x) //执行string  注意 是alert 是alert 是alert  只执行toSring
+console.log(x+1); //执行valueOf 1
+console.log(x+'zfc');// 执行valueOf zfc
+console.log(x+true); // 执行valueOf true
+
+
+var y = function(){
+  return y  //不添加这行代码 默认打印y 也是执行toString
+}
+y.toString = function(){
+  return 'y函数执行toString'
+}
+y.valueOf = function(){
+  return 'y函数执行valueOf'
+}
+console.log(y); //y函数执行toString
+console.log(y()); //y函数执行toString
+console.log(y()()); //y函数执行toString
+
+// 当只是显示的时候 没有进行逻辑运算 只执行toString 没有toString的话undefined
+
+  </script>
+</body>
+
+</html>

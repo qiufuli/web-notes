@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+ /**
+    toString() 方法返回一个表示该对象的字符串。
+    每个对象都有一个 toString() 方法，当对象被表示为文本值时或者当以期望字符串的方式引用对象时，该方法被自动调用。对象x.toString() 返回 “[object type]”,其中type是对象类型。如果x不是对象，toString() 返回x应有的文本值(不是单纯的加”“)
+    */ 
+
+    /**
+    很多类定义了更多特定版本的toString()方法
+- 对象`toString`------ 返回'[object,object]'
+- 数组`toString`------将每个数组元素转换为一个字符串，并在元素之间添加逗号后合并成结果字符串
+- 函数`toString`------返回了这个函数的实现定义的表示方式字符串
+- 日期`toString`------回了一个可读的（可被JavaScript解析的）日期和时间字符串
+- RegExp`toString`------将RegExp对象转换为表示正则表达式直接量的字符串
+    */ 
+
+   
+    let  a  =  {}
+    let  b  =  [1,  2,  3]
+    let  c  =  '123'
+    let  d  =  function () {  console.log('fn')  }
+    let  e  = new Date()
+    let  f  = /\d+/g
+    console.log(a.toString())   // '[object Object]'
+    console.log(b.toString())   // '1,2,3'
+    console.log(c.toString())   // '123'
+    console.log(d.toString())   // 'function(){ console.log('fn') }'
+    console.log(e.toString())   // 'Sat May 08 2021 13:28:00 GMT+0800 (中国标准时间)'
+    console.log(f.toString())   // '/\d+/g'
+    console.log('=============================================================');
+  /**=============================================================*/ 
+
+    // 可以自己定义一个对象的toString()方法来覆盖它原来的方法。这个方法不能含有参数，方法里必须return一个值。
+
+    var a1 = {}
+    console.log(a1.toString());//'[object Object]'
+    a1.toString = function(){
+      return 'a new toString '
+    }
+    console.log(a1+'hello');//a new function hello
+  </script>
+</body>
+
+</html>

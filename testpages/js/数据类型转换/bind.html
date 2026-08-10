@@ -1,0 +1,57 @@
+<!--
+ * @Author: qfuli
+ * @Date: 2023-05-18 16:32:11
+ * @LastEditors: qfuli
+ * @LastEditTime: 2023-05-18 17:20:37
+ * @Description: Do not edit
+ * @FilePath: /web-notes/testpages/js/数据类型转换/bind.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.9/browser.min.js"></script> -->
+  <script>
+    /**
+     * bind
+     * 可以改变this的执行返回一个新的函数 然后再去执行函数
+     * 
+     * **/
+    function a(name) {
+      console.log('a执行结果', name);
+    }
+
+    function b(name) {
+      console.log('b执行结果', name);
+
+    }
+    let c = a.bind(b, 'b')
+    c() //a执行结果 b
+
+    Function.prototype.myBind = function (context) {
+
+      let that = this
+      let args = Array.prototype.slice.call(arguments, 1)
+
+      function fn(...args2) {
+        // 如果通过new创建的 this固定到new对象上不会改变 这里的this指向就需要动一下
+        that.apply(this instanceof fn ? this : context, args.concat(...args2))
+      }
+      return fn
+    }
+
+    let d = a.myBind(b)
+    d('d')
+    // let d = new a.myBind(b)
+    // d('d')
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,56 @@
+<!--
+ * @Author: qfuli
+ * @Date: 2023-05-18 16:32:11
+ * @LastEditors: qfuli
+ * @LastEditTime: 2023-05-18 16:55:53
+ * @Description: Do not edit
+ * @FilePath: /web-notes/testpages/js/数据类型转换/call.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.9/browser.min.js"></script> -->
+  <script>
+    /**
+     * call(obj,xx,yy,zz)
+     * 可以改变this的执行，并且立即执行
+     * 
+     * **/
+
+    var myName = '123';
+    var obj = {
+      myName: 'abc'
+    }
+
+    function fn1(age) {
+      console.log(this.myName, age)
+    }
+    fn1(10); //123  10
+    fn1.call(obj, '20') //abc 20
+
+    // 实现
+    Function.prototype.myCall = function (context) {
+      console.log('this context', this, context);
+      context = context ? context : window
+      // 这样调用fn的时候就是context调用的改变了this指向 this指向context也就是obj
+      context.fn = this;
+      var args = Array.prototype.slice.call(arguments, 1)
+      // var result = context.fn(args.toString())
+      var result = context.fn(...args)
+      delete context.fn
+      return result
+    }
+
+    fn1.myCall(obj, '30') // abc 30
+  </script>
+</body>
+
+</html>

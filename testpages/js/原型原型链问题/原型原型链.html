@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+  // 构造函数
+function Foo(name, age) {
+    this.name = name
+}
+Foo.prototype.alertName = function () {
+  console.log(this.name) 
+}
+// 创建示例
+var f = new Foo('zhangsan')
+f.printName = function () {
+    console.log(this.name)
+}
+// 测试
+f.printName() //zhangsan
+f.alertName() //zhangsan
+/**
+执行printName时很好理解，但是执行alertName时发生了什么？这里再记住一个重点 当试图得到一个对象的某个属性时，如果这个对象本身没有这个属性，那么会去它的__proto__（即它的构造函数的prototype）中寻找，因此f.alertName就会找到Foo.prototype.alertName。
+
+!!!!!! 当试图得到一个对象的某个属性时，如果这个对象本身没有这个属性，那么会去它的__proto__（即它的构造函数的prototype）中寻找
+
+*/
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!--
+ * @Author: qfuli
+ * @Date: 2023-05-15 10:52:14
+ * @LastEditors: qfuli
+ * @LastEditTime: 2023-05-18 14:46:43
+ * @Description: Do not edit
+ * @FilePath: /web-notes/testpages/js/数据类型转换/函数柯里化.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.9/browser.min.js"></script>
+  <script type="text/babel">
+    /**
+     * 1.a==1&&a==2&&a==3 为 true
+     * 
+     * 思路：==会隐式转换 可以使用toString、valueOf当获取a值的时候触发
+     * */ 
+
+     (function(){
+      class A{
+        constructor(value){
+          this.value = value
+        }
+        // toString方式
+        toString(){
+          console.log('执行toString方法',this.value)
+          return this.value++
+        }
+        // valueOf方式 
+        valueOf(){
+          console.log('执行valueOf方法',this.value)
+          return this.value++
+        }
+      }
+      let a = new A(1)
+      console.log(a==1&&a==2&&a==3)
+     })();
+
+      /**
+     * 2.b===1&&b===2&&b===3 为 true
+     * 
+     * 思路：===全等的时候不会进行隐式转换 这里可以使用数据劫持的方式来动态修改变量的值
+     * */ 
+     (function(){
+        let value = 1
+        Object.defineProperty(window,'b',{
+          get(){
+            console.log('劫持的值',value)
+            return value++
+          }
+        })
+        console.log(b===1&&b===2&&b===3)
+     })();
+
+    /**
+     * 3.柯里化实现多参累加 add(1,2)(3)(4,5,6)
+     * 
+     * 思路:函数实现链式调用，起码要返回一个函数，并且实现累加，说明要用到上一次的参数，考虑闭包
+     * */  
+
+     (function(){
+      function add(...args){
+        let result = [];
+        result.push(...args)
+        function sum(...args2){
+          result.push(...args2)
+          console.log('result===>',result)
+          return sum
+        }
+        sum.toString = function(){
+          console.log('执行了toString')
+          let res =  result.reduce((pre,index)=>{
+            return pre+index
+          })
+          return res
+        }
+        return sum
+
+      }
+     console.log('结果===>'+add(1,2)(3)(4,5,6))// 21
+     })();
+     (function(){
+       // 这种可以复用的柯里化方式 注意的是 转化后的参数的个数要一致
+       function foo(x,y,z){
+        return x+y+z
+      }
+      console.log(foo.length)
+      function currying(fn){
+        function handle(...args){
+          // 函数的length表示函数的形参个数
+          if(args.length>=foo.length){
+            return fn(...args)
+          }else{
+            // 这里是为了把之前的参数都push到一起
+            return function(...newArgs){
+              return handle(...args.concat(newArgs))
+            }
+          }
+        }
+        return handle
+      }
+      let fooCurry = currying(foo)
+      let res =fooCurry(10,20)(30)
+      console.log('res',res)
+     })()
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    /* 第三种 利用伪元素的 margin(padding)-top 撑开容器*/
+    /* 无内容时 padding实现*/
+    /* #box{
+      width:50%;
+      background: lightblue;
+    }
+    #box::after{
+      content:'';
+      display: block;
+      padding-top:100%;
+    } */
+
+    /* ###################### */
+
+    /* 无内容时 margin实现 因为在垂直方向上盒子和伪类发生了外边距重叠触发BFC （padding不会触发） 所以复元素上添加 overflow: hidden;*/
+    /* #box{
+      width:50%;
+      background: lightblue;
+      overflow: hidden;
+    }
+    #box::after{
+      content:'';
+      display: block;
+      margin-top:100%;
+    } */
+
+    /* ###################### */
+
+    /* 
+    有内容时 无论是使用margin还是padding当有内容时都会出现高度溢出的问题 高度发生变化 不再是一个正方形
+    可以利用绝对定位消除空间占用
+     */
+
+     /* 有内容时 padding */
+    /* .container{
+      width:50%;
+      background: lightblue;
+      position: relative;
+    }
+    .container::after{
+      content: "";
+      display: block;
+      padding-top: 100%;
+    } */
+    /* ::after 是在内容后添加内容 没有使用绝对定位的时候 宽高也算在盒子的大小 所以height：100% 是占到了padding的大小*/
+    /* .container .box{
+      position: absolute;
+      width: 100%;
+      height: 100%; 
+    } */
+
+
+/* ###################### */
+     /* 有内容时 margin */
+     .container{
+      width:50%;
+      background: lightblue;
+      position: relative;
+      overflow: hidden;
+    }
+    .container::after{
+      content: "";
+      display: block;
+      margin-top: 100%;
+    }
+    .container .box{
+      position: absolute;
+      width: 100%;
+      height: 100%; /* ::after 是在内容后添加内容 没有使用绝对定位的时候 宽高也算在盒子的大小*/
+    }
+  </style>
+</head>
+
+<body>
+  <div id="box"></div>
+
+
+  <div class="container">
+    <div class="box">有内容</div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+<!--
+ * @Author: qfuli
+ * @Date: 2023-05-18 16:32:11
+ * @LastEditors: qfuli
+ * @LastEditTime: 2023-05-18 17:36:33
+ * @Description: Do not edit
+ * @FilePath: /web-notes/testpages/js/数据类型转换/new.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.9/browser.min.js"></script> -->
+  <script>
+    /**
+     * new原理
+     * 1. 创建一个新对象
+     * 2. 对象proto指向构造函数原型
+     * 3. 构造函数指向绑定this到新对象上 call apply
+     * 4. 返回新对象
+     * **/
+
+    function Animal(type) {
+      this.type = type
+    }
+    Animal.prototype.say = function () {
+      console.log(this.type + 'say');
+    }
+    // let a = new Animal('猫')
+    // a.say()
+
+    // 实现
+    function myNew(parent, ...args) {
+      let obj = {}
+      obj.__proto__ = parent.prototype
+      parent.apply(obj, args)
+      return obj
+    }
+    let b = myNew(Animal, '猫')
+    b.say()
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,body{
+      height: 100%;
+      overflow: hidden;
+    }
+    .container{
+      height: 100%;
+    }
+    .left,.right{
+      float: left;
+      width:200px;
+      height: 200px;
+      background: lightblue;
+    }
+    .center{ 
+      float: left;
+      /* 兼容到ie9 */
+      width: calc(100% - 400px);
+      height: 200px;
+      background: lightcoral;
+    }
+  /* 一般情况下不推荐使用类似calc这种表达式的写法 因为表达式在渲染上性能比较慢  尽可能少写 */
+  </style>
+</head>
+<body class="container">
+  <div class="left"></div>
+  <div class="center"></div>
+   <div class="right"></div>
+</body>
+</html>

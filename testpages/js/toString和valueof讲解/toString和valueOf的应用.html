@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 1. a===1&&a===2&&a===3 为 true ?
+        // 双等号(==)：会触发隐式类型转换，所以可以使用 `valueOf` 或者 `toString` 来实现。
+        class A{
+            constructor(value){
+                this.value = value;
+            }
+            valueOf(){
+                return this.value++
+            }
+        }
+        const a = new A(1);
+        if(a==1&a==2&a==3){
+            console.log(true);
+        }
+
+        // 全等(===)：严格等于不会进行隐式转换，这里使用 Object.defineProperty 数据劫持的方法来实现
+        
+        let value = 1;
+        Object.defineProperty(window,'b',{
+            get(){
+                return value++
+            }
+        });
+        if(b===1&b===2&b===3){
+            console.log('全等通过');
+        }
+
+        // ========================================================================================
+
+        // 2. 实现一个无限累加函数  add(1)(2)(3)
+        function add(a){
+            function sum(b){
+                a= b ? a+b : a; //a = b有的话 a+b 没有的话 就是a
+                return sum; //这步是显示连续调用的地方 只是返回函数本身 ()可直接调用
+            }
+            sum.toString = function(){
+                return a
+            }
+            return sum
+        }
+        console.log('add==>',add(1));// 1
+        console.log('add==>',add(1)(2)); // 3
+        console.log('add==>',add(1)(2)(3)); //6
+        /**
+         * add函数内部定义sum函数并返回，实现连续调用
+         * sum函数形成了一个闭包，每次调用进行累加值，再返回当前函数sum
+         * add()每次都会返回一个函数sum，直到最后一个没被调用，默认会触发toString方法，所以我们这里重写toString方法，并返回累计的最终值a
+         * 这样说才能理解:
+         * add(10): 执行函数add(10)，返回了sum函数，注意这一次没有调用sum，默认执行sum.toString方法。所以输出10；
+         * add(10)(20): 执行函数add(10)，返回sum(此时a为10)，再执行sum(20)，此时a为30，返回sum，最后调用sum.toString()输出30。add(10)(20)...(n)依次类推。
+         * 
+        */
+
+        //========================================================================================
+        // 3. 柯里化实现多参累加 add(1,2)(3)(4,5,6)
+        // 这里是上面累加的升级版，实现多参数传递累加
+        function klhAdd(...args){
+            let sum = [...args];
+            let addMore = function(...b){
+                sum.push(...b)
+                return addMore
+            }
+            addMore.toString=function(){
+                return sum.reduce((c,d)=>{
+                    return c+d;// 实现累加
+                })
+            }
+            return addMore
+        }
+        console.log('klhAdd===>',klhAdd(1,2)(3)(4,5));//15
+        // ===============================================================================================
+        // 4. 实现参数内相乘多个参数相加 add(1,2)(3)(4,5,6)
+        function klhAdd2(...args){
+            let arr = []
+            let sum = [...args].reduce((c,d)=>{
+                    return c*d;// 实现累乘
+                });
+                arr.push(sum)
+            let addMore = function(...b){
+                let _b = [...b].reduce((c,d)=>{
+                    return c*d;// 实现累乘
+                });
+                arr.push(_b)
+                console.log(arr);
+
+                return addMore
+            }
+            addMore.toString=function(){
+                return arr.reduce((c,d)=>{
+                    return c+d;// 实现累加
+                })
+            }
+            return addMore
+        }
+        console.log('klhAdd2===>',klhAdd2(1,2)(3)(4,5));//25
+    </script>
+</body>
+
+</html>

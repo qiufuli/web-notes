@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+
+        // 数组解构
+        //完全解构
+        let [a,b] = [1,2];
+        console.log(a,b);//1 2
+        let [c,...d] = [1,2,3,4,5];
+         console.log(c,d); //1 (4) [2, 3, 4, 5]
+         let [,,e] = [1,2,3];
+         console.log(e); // 3
+         let [f] = [];
+         console.log(f); // undefined
+
+         // 不完全解构
+         let [x, y] = [1, 2, 3];
+         console.log(x,y);
+         let [g, [h], j] = [1, [2, 3], 4];
+         console.log(g,h,j);
+
+         let [foo=true] = [];
+         console.log(foo);
+
+        //  函数解构
+
+        function aa({x=0,y=0} = {}){
+            console.log(x,y)
+        }
+        aa({x:1})
+        let z;
+        [(z)] = [3]
+        console.log(z)
+    </script>
+</body>
+</html>

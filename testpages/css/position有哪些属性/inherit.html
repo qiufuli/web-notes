@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .wrap{
+      width: 100px;
+      height: 100px;
+      background: lightblue;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      margin: 0 auto;
+    }
+    .wrap1{
+      width: 50px;
+      height: 50px;
+      background: lightcoral;
+      position: inherit;
+      top: 4px;
+      left: 4px;
+      margin: 0 auto;
+    }
+    /* 
+    inherit 继承
+    这里继承了父级的绝对定位 margin 左右auto是无效的 改成relative就有效了 说明成功继承了
+    */
+  </style>
+</head>
+<body>
+  <!-- inherit -->
+  <div class="wrap">
+    xxx
+    <div class="wrap1">
+      asd
+    </div>
+  </div>
+  
+</body>
+</html>

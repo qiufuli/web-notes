@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,body{
+      height: 100%;
+      overflow: hidden;
+    }
+    .container{
+      height: 100%;
+      padding: 0 200px;
+    }
+    .left,.right{
+      width: 200px;
+      min-height: 200px;
+      background: lightblue;
+    }
+    .center{
+      width: 100%;
+      min-height: 400px;
+      background: lightcoral;
+    }
+    .left,.right,.center{
+      float: left;
+    }
+    .left{
+      margin-left: -100%;
+      position: relative;
+      left: -200px;
+    }
+    .right{
+      margin-right: -200px;
+    }
+  
+  </style>
+</head>
+<body>
+  <!-- 
+    圣杯布局
+    双飞翼布局
+    ===》 左右固定，中间自适应
+
+    圣杯布局：浮动+ 负值margin 
+    主要特点是 需要 左中右 三个指定布局的盒子
+
+   -->
+   <div class="container clearfix">
+     <div class="center"></div>
+     <div class="left"></div>
+     <div class="right"></div>
+   </div>
+
+</body>
+</html>

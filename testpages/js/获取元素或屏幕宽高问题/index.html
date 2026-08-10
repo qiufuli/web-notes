@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #box{
+      width: 100px;
+      height: 100px;
+      padding: 50px;
+      margin: 50px;
+      border: 5px solid ;
+      background: blue;
+      overflow: hidden;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="box">asdasdjkasdasdasdjkasdasdasdjkasdasdasdjkasdasdasdjkasdasdasdjkasdasdasdjkasdasdasdjkasdasdasdjkasdasdasdjkasd</div>
+  <p style="width: 2000px;height: 1500px;">11</p>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+    console.log(document.getElementById('box').offsetWidth,'offsetWidth'); // width+padding+border;
+    console.log(document.getElementById('box').clientWidth,'clientWidth'); // width+padding;
+    console.log(document.getElementById('box').scrollWidth,'scrollWidth'); // 内容没有溢出时 跟clientWidth一样 width+padding; 如果溢出：需要计算实际内容宽高
+    console.log(window.innerHeight); //可视区高度 带滚动条高度
+    console.log(window.outerHeight); // 可视区高度 带工具条的高度 带滚动条高度
+  </script>
+</body>
+</html>

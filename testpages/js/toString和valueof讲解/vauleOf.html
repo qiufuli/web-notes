@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    /**
+    valueOf() 
+    
+    JavaScript 调用 valueOf() 方法用来把对象转换成原始类型的值（数值、字符串和布尔值）
+  默认情况下, valueOf() 会被每个对象Object继承。每一个内置对象都会覆盖这个方法为了返回一个合理的值，如果对象没有原始值，valueOf() 就会返回对象自身
+    */
+
+    // 没有原始值 返回对象本身 
+    var a = {};
+    console.log(a.valueOf());//返回 Object {} 不是字符串 就是对象本身
+    var b = [1, 2, 3];
+    console.log(b.valueOf())  //返回[1, 2, 3]
+    var c = function () { console.log('lalala') }
+    console.log(c.valueOf())  //返回 function (){console.log('lalala')}
+    var d = 12345;
+    console.log(b.valueOf())  //返回 12345
+
+    // 可以自己定义一个对象的valueOf()方法来覆盖它原来的方法。这个方法不能含有参数，方法里必须return一个值。
+
+    var x = {};
+    x.valueOf = function () {
+      return 10;
+    }
+    x.toString = function () {
+      return 30;
+    }
+    console.log(x + 1);// 输出10
+    console.log(x + "hello");//输出10hello
+  </script>
+</body>
+
+</html>

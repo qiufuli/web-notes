@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+function test(person) {
+  person.age = 26; // p1的age属性在这里已经改变了
+  person = {
+    name: 'yyy',
+    age: 30
+  }
+  return person //这里返回一个新对象person给p2
+}
+const p1 = {
+  name: 'yck',
+  age: 25
+}
+const p2 = test(p1) 
+console.log('p1',p1) // -> ?{age: 26,name: "yck"}
+console.log('p2',p2) // -> ?{age: 30,name: "yyy"}
+
+//******************************************
+function foo(a){
+    a = a * 10;
+}
+function bar(b){
+    b.value = 'new';
+}
+var a = 1;
+var b = {value: 'old'};
+foo(a);
+bar(b);
+console.log(a); // 1 a的值没有发生改变
+console.log(b); // value: new 而b的值发生了改变
+
+/*其实形参是局部变量，当函数调用结束以后，用作形参的局部变量就会
+不存在。即使在函数中修改了传递进来的基本数据类型的参数值，它也
+不会应影响到主程序中作为参数的那个基本数据类型的变量值，所以这
+里的x变量的值还是不会变的 */;
+/*
+按值传递一个参数给函数。即使按引用传递对象和数组时，如果直接在函数中用新值覆盖原先的值，在函数外并不反映新值。
+只有在对象的属性或者数组的元素改变时，在函数外才可以看出。
+*/
+</script>  
+</html>

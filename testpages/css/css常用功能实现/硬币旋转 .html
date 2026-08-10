@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <!-- 两种实现方式：1、animation+keyframes 2、transition： -->
+  <style type="text/css">
+    .around {
+      width: 200px;
+      height: 200px;
+      background: orange;
+      /*圆形的话看不出效果，所以这里border-radius没有取50%*/
+      border-radius: 40%;
+      transform: rotate(0deg);
+      animation: move 3s ease;
+    }
+
+    @Keyframes move {
+      0% {
+        transform: rotate(0deg);
+      }
+      50% {
+        transform: rotate(360deg);
+      }
+      100% {
+        transform: rotate(0deg);
+      }
+    }
+  </style>
+
+  <!-- <style type="text/css">
+    .around {
+      width: 200px;
+      height: 200px;
+      background: orange;
+      /*圆形的话看不出效果，所以这里border-radius没有取50%*/
+      border-radius: 40%;
+      transform: rotate(0deg);
+      transition: transform 3s linear;
+    }
+
+    .around:hover {
+      transform: rotate(360deg);
+    } -->
+  </style>
+
+</head>
+
+<body>
+  <div class="around"></div>
+</body>
+
+</html>

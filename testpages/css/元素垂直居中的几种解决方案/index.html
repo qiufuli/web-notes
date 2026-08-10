@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+    body{
+      position: relative;
+    }
+    .box {
+      box-sizing: border-box;
+      width: 500px;
+      height: 500px;
+      line-height: 48px;
+      text-align: center;
+      font-size: 16px;
+      border: 1px solid lightblue;
+
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -250px;
+      margin-left: -250px;
+    }
+
+    /* 第一种方式 定位 */
+    /* body{
+    position: relative;
+  }  
+  .box{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -25px;
+    margin-left: -50px;
+  } */
+    /* top left 为50% 是box左上角相对父元素 所以要往上和左移动盒子一半的位置才是相对居中，也就是为什么要写margin处理 */
+    /* 这种方式的限制是 必须知道元素的具体宽高才行 */
+
+
+    /* 第二种方式 定位 */
+    /* body{
+    position: relative;
+  }  
+  .box{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  } */
+    /* 这种方式只是不需要考虑宽高，不需要用margin来取中计算，但是一定要有宽高才行，没有任意一方定位后盒子相对父元素都是100% */
+
+
+    /* 第三种方式 定位 */
+    /* body{
+    position: relative;
+  }  
+  .box{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  } */
+    /* css3的transform实现 ,这种方式不需要考虑元素的宽高，缺点就是兼容性问题 */
+
+
+
+    /* 第四种方式 flex */
+    /* body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  } */
+    /* css3flex 让子元素水平轴和垂直轴方面居中，无需考虑子元素的宽高 缺点就是兼容性问题 */
+
+    /* 第五种方式 display:table-cell 不常用*/
+    /* 本身是控制文本的居中 要是盒子的话 可以设置为inline / inline-block */
+    /* 弊端 需要父级有固定px的宽高 百分比还不行 */
+    /* body{
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    background: lightcoral;
+    width:500px;
+    height: 500px;
+  }
+  .box{
+    display: inline-block;
+  } */
+    /* 缺点很明显 需要父元素有固定宽高 需要子元素为行内/行内块 但子元素可以不设置 */
+  </style>
+</head>
+
+<body>
+  <div class="box">
+   啊实打实的
+  </div>
+</body>
+
+</html>

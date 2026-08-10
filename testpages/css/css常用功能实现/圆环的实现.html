@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>圆环进度条</title>
+    <meta charset="utf-8" name="viewport" content="width=device-width;initial-scale=1.0" />
+    <style type="text/css">
+        .con {
+            position: relative;
+            display: inline-block;
+            width: 200px;
+            height: 200px;
+        }
+
+        .percent-circle {
+            position: absolute;
+            height: 100%;
+            background-color: #ff0000;
+            overflow: hidden;
+        }
+
+        .percent-circle-left {
+            width: 100px;
+            border-radius: 100px 0 0 100px;
+        }
+
+        .percent-circle-left .left-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-origin: right center;
+            transform: rotate(30deg);
+            border-radius: 100px 0 0 100px;
+            background: #bbb;
+        }
+
+        .percent-circle-right {
+            right: 0;
+            width: 100px;
+            border-radius: 0 100px 100px 0;
+        }
+
+        .percent-circle-right .right-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-origin: left center;
+            transform: rotate(0deg);
+            border-radius: 0 100px 100px 0;
+            background-color: #bbb;
+        }
+
+        .text-circle {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80%;
+            width: 80%;
+            left: 10%;
+            top: 10%;
+            border-radius: 100%;
+            background: #000;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="con">
+        <div class="percent-circle percent-circle-left">
+            <div class="left-content"></div>
+        </div>
+        <div class="percent-circle percent-circle-right">
+            <div class="right-content"></div>
+        </div>
+        <div class="text-circle">0%</div>
+    </div>
+</body>
+<script>
+ var leftContent = document.querySelector(".left-content");
+    var rightContent = document.querySelector(".right-content");
+    var textCircle = document.querySelector(".text-circle");
+//先是leftContent旋转角度从0增加到180度，
+    //然后是rightContent旋转角度从0增加到180度
+    var angle = 0;
+
+var timerId = setInterval(function () {
+    angle += 30;
+    if (angle > 360) {
+        clearInterval(timerId);
+    } else {
+        if (angle > 180) {
+            rightContent.setAttribute('style', 'transform: rotate(' + (angle - 180) + 'deg)');
+        } else {
+            leftContent.setAttribute('style', 'transform: rotate(' + angle + 'deg)');
+        }
+        setPercent(angle);
+
+    }
+}, 1500);
+
+function setPercent(angle) {
+    textCircle.innerHTML = parseInt(angle * 100 / 360) + '%';
+}
+</script>
+</html>

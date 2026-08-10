@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var os = {
+            aa: undefined,//JSON.parse(JSON.stringify(os)) 该方法会忽略掉函数和 undefined 。
+            name: '小花',
+            friend: ['小明', '小兰'],
+            fn: function () {
+                console.log(1)
+            }
+        }
+        function deepCopy(o, c) {
+      var c = c || {};
+      for (var i in o) {
+        if (typeof o[i] == 'object') {
+          c[i] = (o[i].constructor == Array) ? [] : {};
+          deepCopy(o[i], c[i]);
+        } else {
+          c[i] = o[i];
+        }
+      }
+      return c
+    }
+        var c1 = deepCopy(os)
+        c1.friend.push('111')
+        os.friend.push('xiaohei')
+        console.log('os', os)
+        console.log('c1', c1)
+    </script>
+</body>
+
+</html>

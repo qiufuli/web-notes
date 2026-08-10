@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+  /* unset 也是关键字 设置positon的值为不设置
+
+  如果该属性的默认属性是 继承属性(例如字体相关的默认属性基本都是继承)，该值等同于 inherit 
+  如果该属性的默认属性 不是继承属性(例如pisition的默认属性为static)，该值等同于initial
+
+ */
+ .wrap {
+   width: 200px;
+   height: 200px;
+   background-color: lightblue;
+   /* position 不是继承属性 默认static */
+   position: absolute;
+   top: 20px;
+ }
+ .bo{
+   position: unset;
+ }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="bo">as萨迪克京阿萨德
+    </div>
+  </div>
+</body>
+</html>

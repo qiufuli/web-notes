@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Description">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+    <style>
+        .content {
+            padding-top: 0px;
+        }
+
+        .topBox {
+            width: 80px;
+            height: 80px;
+            line-height: 65px;
+            position: fixed;
+            bottom: 50px;
+            right: 50px;
+            z-index: 9999;
+            font-size: 50px;
+            border-radius: 50%;
+            background-color: #80c8a3;
+            text-align: center;
+            color: #ffffff;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">加载中，请稍后...</div>
+    <div class="topBox">↑</div>
+    <script>
+        window.$docsify = {
+            name: '',
+            repo: '',
+            loadNavbar:true,//导航栏
+            loadSidebar: true, //显示侧边栏
+            subMaxLevel: 6,
+            auto2top: true, //切换页面后是否自动跳转到页面顶部。
+            // alias: {
+            // '/.*/_sidebar.md': '/_sidebar.md'
+            // },
+            search: {
+                noData: {
+                    '/de-de/': 'Keine Ergebnisse!',
+                    '/zh-cn/': '没有结果!',
+                    '/': '没有结果!'
+                },
+                paths: 'auto',
+                placeholder: {
+                    '/de-de/': 'Suche',
+                    '/zh-cn/': '搜索',
+                    '/': '搜索'
+                }
+            },
+            count: {
+            countable: false,
+            fontsize: '0.9em',
+            color: 'rgb(90,90,90)',
+            language: 'chinese'
+            }
+        }
+    </script>
+    <!-- Docsify v4 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+    <script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script src="//unpkg.com/prismjs/components/prism-c.js"></script>
+    <script src="//unpkg.com/prismjs/components/prism-clike.js"></script>
+    <script src="//unpkg.com/prismjs/components/prism-cpp.js"></script>
+    <!-- 字数统计 -->
+    <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
+    <!-- 复制到剪贴板 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+    <!-- 放大图片 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+    <script>
+        $(function () {
+            $(document).on('scroll', function () {
+                scrollFn()
+            })
+            $(document).on('click', '.topBox', function () {
+                $(document).scrollTop(0)
+            })
+
+            function scrollFn() {
+                if ($(document).scrollTop() > 200) {
+                    $('.topBox').show();
+                } else {
+                    $('.topBox').hide();
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
+</script>
+</body>
+
+</html>
