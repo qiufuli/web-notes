@@ -64,15 +64,17 @@
 
 - 文件类型声明（<!DOCTYPE>）仅有一型：`<!DOCTYPE HTML>` --- 与 html4 的区别。
 - 新的解析顺序：不再基于 SGML。 --- 与 html4 的区别
-- 新增语义化标签类：article 、footer 、header 、nav 、section。。
+- 新增语义化标签类：article 、footer 、header 、nav 、section。
 - 音视频处理: video、radio
 - input type 添加新属性： calendar 、date 、time 、email 、url 、search
 - canvas、webGL、svg 画图、可视化、矢量图
 - history API
-- 本地存储:localStorage 和 sessionStorage
+- 本地存储:localStorage 和 sessionStorage [(详细讲解)](htmlcss/html?id=有几种前端储存的方式)
 - 地理位置：Geolocation API
 - websocket 实时通信
-- 获取设备能力：摇一摇 横竖屏。。。
+- 获取设备能力：摇一摇 横竖屏等。
+
+> 核心是语义化、多媒体、图形、存储，以及 WebSocket等功能
 
 ---
 
@@ -196,13 +198,15 @@ $(this).attr('data-name', 'yyyy') //yyyy
 
 # <font color="#e96900">有哪些常用的 meta 标签？</font>
 
-`meta`标签由`name`和`content`两个属性来定义，来描述一个`HTML`网页文档的`元信息`，例如作者、日期和时间、网页描述、关键词、页面刷新等，除了一些`http`标准规定了一些`name`作为大家使用的共识，开发者也可以`自定义name`。
+> `<meta>` 标签位于 `<head>` 内，用来描述文档的**元数据（metadata），本身不渲染在页面上**。它通过 `name/content` 或 `http-equiv/content` 这种「键值对」的形式，告诉浏览器、搜索引擎、社交平台如何处理这个页面。
 
-`charset`，用于描述 HTML 文档的编码形式
+`charset`，用于描述 HTML 文档的字符编码（必背，几乎必问）
 
 ```html
 <meta charset="UTF-8" />
 ```
+- 告诉浏览器用 UTF-8 解码，避免中文乱码。
+- 追问点：为什么一定要放？——如果放错或不放，浏览器会按错误编码解析，出现乱码；建议放在 <head> 最前面，让浏览器尽早知道编码。
 
 `http-equiv`，顾名思义，相当于 http 的文件头作用,比如下面的代码就可以设置 http 的缓存过期日期,定义浏览器的渲染方式的
 
@@ -211,7 +215,7 @@ $(this).attr('data-name', 'yyyy') //yyyy
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 ```
 
-`viewport`，移动前端最熟悉不过，Web 开发人员可以控制视口的大小和比例
+`viewport`视口(移动端适配核心，必考)
 
 ```html
 <meta
@@ -219,17 +223,40 @@ $(this).attr('data-name', 'yyyy') //yyyy
   content="width=device-width, initial-scale=1, maximum-scale=1"
 />
 ```
+- width=device-width：让布局宽度等于设备宽度，而不是默认的 980px 缩放。
+- initial-scale=1.0：初始缩放比例为 1。
+- 还可以加 user-scalable=no（禁止缩放，但现在不推荐，影响无障碍）、maximum-scale（最大缩放比例为 1.0） 等。
 
-`keywords` `description` 关键字 描述 方便 SEO 搜索
+追问点：viewport 解决了什么问题？ —— 移动端网页不再被当成桌面页面缩小显示，是实现响应式/移动端适配的前提。
+
+`author` `keywords` `description` 关键字 描述 SEO 相关
 
 ```html
+<meta name="author" content="作者名">
 <meta
   name="keywords"
   content="doc,docs,documentation,gitbook,creator,generator,github,jekyll,github-pages"
 />
 <meta name="description" content="A magical documentation generator." />
 ```
+移动端 / Web App 相关
 
+```html
+<meta name="apple-mobile-web-app-capable" content="yes">   <!-- iOS 添加到主屏后全屏显示 -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">     <!-- 禁止 iOS 自动识别手机号为链接 -->
+<meta name="theme-color" content="#ffffff">               <!-- 浏览器地址栏主题色 -->
+
+```
+
+追问点：format-detection 是干嘛的？—— iOS 会把页面里的数字（如电话号码、QQ号）自动识别成可点击链接，telephone=no 就是关闭这个行为。
+
+**总结**
+1. `viewport` 视口是移动端适配的核心，它让布局宽度等于设备宽度，而不是默认的 980px 缩放。
+2. `charset` 字符编码是必须的，它告诉浏览器用 UTF-8 解码，避免中文乱码。
+3. `http-equiv` 文件头作用是定义浏览器的渲染方式的，比如缓存过期日期、定义浏览器的渲染方式的。
+4. SEO 相关`author` `keywords` `description` 。
+5. 移动端 / Web App 相关的 meta 标签，比如 `apple-mobile-web-app-capable`、`apple-mobile-web-app-status-bar-style`、`format-detection`、`theme-color` 等。
 ---
 
 # <font color="#e96900">src 和 href 的区别？</font>
@@ -280,11 +307,30 @@ $(this).attr('data-name', 'yyyy') //yyyy
 
 ---
 
+# <font color="#e96900">img 的 alt 和 title 区别</font>
+
+## alt vs title
+
+| | alt | title |
+|---|---|---|
+| 作用 | 替代文本 | 悬停提示 |
+| 时机 | 加载失败/读屏 | 鼠标 hover |
+| 目的 | 无障碍 + SEO | 补充说明（可选） |
+
+**加分**：装饰图写 `alt=""`（跳过读屏）；`title` 移动端看不到，别放关键信息。
+
+
+---
+
 # <font color="#e96900">script 标签中 defer 和 async 的区别？</font>
 
 - `defer`（延迟）：**浏览器指示脚本在文档被解析后执行，script 被异步加载后并不会立刻执行，而是等待文档被解析完毕后执行。**
 - `async`(异步)：**同样是异步加载脚本，区别是脚本加载完毕后立即执行，这导致 async 属性下的脚本是乱序的，要注意引入的先后顺序，对于 script 有先后依赖关系的情况，并不适用。**
   ![](../imgs/html/01.png)
+
+**那`defer`这么好用为什么不默认就使用呢**
+
+因为 `defer` 的本质是「推迟执行」而不是「优化执行」——它对埋点这类要尽早跑的脚本会漏数据、对和内联脚本有依赖的脚本会乱序，而且重脚本执行时照样卡主线程；所以没有万能默认值，defer 保顺序、async 抢时机、普通 script 保立即按序，选哪个取决于脚本的依赖关系和执行时机。
 
 ---
 
