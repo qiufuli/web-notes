@@ -152,3 +152,63 @@ const notices = ref<Resource<Notice[]>>({ data: null, loading: false, error: nul
 ### 可能追问
 
 - 什么时候用 provide/inject？适合跨多层组件传递稳定上下文，例如表单或主题；不适合替代所有全局状态，且要防止隐式依赖难追踪。
+
+## P0：Pinia 的 Option Store 和 Setup Store 怎么选？
+
+### 30 秒回答
+
+Option Store 用 `state/getters/actions` 组织，迁移 Vuex 的团队更容易接受；Setup Store 直接使用 ref、computed 和函数，能复用 Composition API 逻辑，TypeScript 推导也自然。选择应以团队约定、测试方式和业务复杂度为准，不要同一项目无规则混用。
+
+```ts
+export const useCounterStore = defineStore('counter', {
+  state: () => ({ count: 0 }),
+  getters: {
+    double: (state) => state.count * 2,
+  },
+  actions: {
+    increment() {
+      this.count += 1
+    },
+  },
+})
+```
+
+## P0：Pinia 中如何保持解构后的响应式？
+
+### 30 秒回答
+
+直接解构 Store 会丢失 state/getter 的响应式连接；使用 `storeToRefs` 解构 state 和 getters，actions 可以直接解构，因为它们是稳定函数。需要整体替换或批量更新时，可使用 `$patch`，并保持变更意图集中。
+
+```ts
+const store = useCounterStore()
+const { count, double } = storeToRefs(store)
+const { increment } = store
+```
+
+## P0：Pinia 的插件、持久化和 SSR 注意什么？
+
+### 30 秒回答
+
+插件可以添加持久化、审计或通用能力，但持久化必须选择白名单、版本和过期策略，不能把所有 Store 序列化到 localStorage。SSR 场景还要避免把一个用户的 Store 状态泄漏给另一个请求，服务端和客户端需要正确 hydrate。
+
+### 项目表达
+
+登录态、权限和用户偏好要分开处理。退出时清除敏感 Store，持久化插件升级时做版本迁移；如果没有明确需求，宁可不持久化。
+
+## P1：路由参数、query 和 Store 如何协作？
+
+### 30 秒回答
+
+路径参数通常标识资源身份，例如 `/users/:id`；query 适合可分享、可恢复的筛选和分页；Store 适合跨页面共享且不适合放进 URL 的状态。进入页面时定义唯一数据源，避免 URL、Store 和组件各自维护一份互相覆盖。
+
+## P1：如何设计权限模型而不是只做路由拦截？
+
+### 30 秒回答
+
+认证、路由权限、页面元素权限和服务端资源授权是四层问题。路由守卫决定能否进入，按钮指令或组件能力控制可见性，API 服务端校验最终权限和资源归属。前端权限数据还要考虑刷新恢复、过期、租户切换和退出清理。
+
+## P1：Store 如何测试？
+
+### 30 秒回答
+
+纯状态转换和 getter 可直接测试，异步 action 通过请求层边界验证成功、失败、取消和重复调用。测试重点是对外行为和状态结果，不要把测试绑死在 Pinia 内部实现或具体调用次数上。

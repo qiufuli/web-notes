@@ -1,3 +1,4 @@
+* [高频基础题精讲](2026-interview/16-高频基础题精讲/README.md)
 * [2026 面试更新](2026-interview/README.md)
   * [入口与知识地图](2026-interview/README.md)
   * [求职定位与项目表达](2026-interview/01-求职定位与项目表达.md)
@@ -14,6 +15,7 @@
   * [Vite、工程化、发布与质量保障](2026-interview/12-Vite工程化构建发布与质量保障.md)
   * [手写题、场景题与排障题](2026-interview/13-手写题场景题与排障题.md)
   * [模拟面试追问库](2026-interview/14-模拟面试追问库.md)
+  * [跨章节串讲与项目场景](2026-interview/15-跨章节串讲与项目场景.md)
 
 * [htmlcss](/htmlcss/html.md)
   * [html知识点](htmlcss/html.md)
