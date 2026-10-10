@@ -1,52 +1,46 @@
 # 路由、组件设计与 Pinia 状态管理
 
-> Pinia 是 Vue 3 项目的常见标配，但“所有状态都放 Store”依然是错误设计。先定义状态边界，再选择组件、composable、URL 或 Store。
+> Pinia 是 Vue 3 项目的常见标配，但状态放进 Store 并不会自动变得合理。先判断状态的所有者、生命周期和复用范围，再选择组件、composable、URL 或 Store。
 
-## P0：组件状态、URL 状态和全局 Store 状态如何划分？
+## 一、先解决“状态应该放在哪里”
 
-### 30 秒回答
-
-只影响单个组件的临时 UI 状态放组件内；可在同一页面复用的逻辑放 composable；用户需要分享、刷新或前进后退保留的筛选条件可放 URL query；跨路由、跨组件共享且需要稳定生命周期的状态才放 Pinia。服务端数据还要考虑缓存、失效和请求状态，不应和纯 UI 状态混在一起。
-
-### 展开说明
-
-状态放得过高会增加同步、清理和调试成本，放得过低则产生层层透传。判断时可问：谁读它、生命周期多长、刷新后是否要恢复、是否可由其他状态推导、谁有权修改它。
+一个后台列表页通常同时有搜索条件、分页、弹窗、接口数据、登录用户和权限。全部放组件会透传，全部放 Store 又会让页面互相污染。可以先问四个问题：
 
 ```text
-输入框是否展开：组件 state
-列表请求、分页、取消逻辑：页面 composable
-筛选条件需要可复制链接：route.query
-当前用户、权限、全局应用配置：Pinia
-后端列表数据：根据复用范围放页面缓存、Store 或专用数据请求层
+谁需要读取？
+生命周期有多长？
+刷新或分享链接后是否要恢复？
+它是服务端数据、用户输入，还是纯 UI 状态？
 ```
 
-### 项目表达
+```text
+弹窗开关、当前 tab       -> 组件状态
+请求、分页、取消逻辑     -> 页面 composable
+可分享的筛选与分页       -> route.query
+用户、权限、应用配置     -> Pinia
+后端列表数据             -> 按复用范围选择页面缓存、Store 或专用数据层
+```
 
-我会避免把表单每个字段和每个弹窗开关都放全局 Store。状态边界清楚以后，页面跳转残留、刷新不同步和多个模块相互改状态的问题会明显减少。
+状态放得过高会增加同步、清理和调试成本，放得过低会导致层层传参。URL 里不要放密码、Token 等敏感数据，因为它会进入历史、日志和分享链接。
 
-### 可能追问
+## 二、Pinia 的工作模型
 
-- Store 和 composable 都能共享状态，区别是什么？composable 默认每次调用创建独立状态；Store 是有命名、Devtools 和应用级生命周期的共享状态容器。
-- URL 参数是否适合保存敏感数据？不适合。URL 会出现在历史、日志和分享链接中。
+### P0：Pinia 的核心概念是什么？
 
-## P0：Pinia 的核心概念是什么？与 Vuex 有哪些差异？
+Pinia Store 可以看作一个有名字、应用级生命周期和 Devtools 支持的共享状态容器：
 
-### 30 秒回答
-
-Pinia 用 `defineStore` 定义 Store，核心是 state、getters 和 actions；actions 可以直接写异步逻辑。它更贴近 Composition API，模块按 Store 自然拆分，TypeScript 推导更好，也不再要求通过 mutation 修改状态。Vuex 在 Vue 2 存量项目中仍可稳定使用，迁移应看项目边界和收益，不是强制替换。
-
-### Setup Store 示例
+```text
+state：事实数据
+getters：由 state 派生的只读结果
+actions：修改状态与业务编排，可包含异步
+```
 
 ```ts
 // stores/auth.ts
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
-type Profile = {
-  id: string
-  name: string
-  roles: string[]
-}
+type Profile = { id: string; name: string; roles: string[] }
 
 export const useAuthStore = defineStore('auth', () => {
   const profile = ref<Profile | null>(null)
@@ -70,24 +64,50 @@ export const useAuthStore = defineStore('auth', () => {
 })
 ```
 
-### 展开说明
+Setup Store 直接使用 `ref`、`computed` 和函数，适合 Vue 3 组合式逻辑；Option Store 的 `state/getters/actions` 更接近 Vuex，迁移团队更容易理解。项目内应形成统一约定，不要无规则混用。
 
-Option Store 写法接近 Vuex，Setup Store 更接近 composable。二者都可以使用，团队应统一约定。Store 内可直接改 state，但仍要保持 action 命名和副作用边界，不能让任何组件随意修改深层对象。
+## 三、Store 和 composable 的边界
 
-### 项目表达
+Store 和 composable 都能封装状态，但默认语义不同：
 
-我的 Store 会按业务领域拆分，例如 auth、permission、app-settings，而不是一个巨大的 `useGlobalStore`。组件读取多个字段时可用 `storeToRefs` 保持响应式；涉及登录退出时由 Store 统一清理 profile、权限和相关缓存。
+```text
+composable：通常每次调用创建独立状态，适合页面逻辑复用
+Pinia Store：应用内按 id 共享，适合跨页面、稳定生命周期的状态
+```
 
-### 可能追问
+请求列表、分页和取消逻辑只被一个页面使用时，composable 往往更轻；当前用户、权限、租户和全局配置才适合 Store。服务端数据还要考虑缓存、失效和重复请求，不能因为“全局共享”就全部塞进 Store。
 
-- Pinia 数据如何持久化？Pinia 本身不自动持久化，可用插件或手工订阅；要区分非敏感偏好和登录安全数据，并处理版本升级、过期和清理。
-- 能否在 Store 里使用 router？可以，但要避免 Store 与路由形成循环依赖；导航意图通常由页面或服务层协调更清晰。
+## 四、Pinia 解构、批量更新与持久化
 
-## P0：Vue Router 4 的导航守卫如何设计权限控制？
+### P0：Pinia 中如何保持解构后的响应式
 
-### 30 秒回答
+直接解构 Store 的 state/getter 会失去响应式连接：
 
-路由守卫适合处理进入路由前的认证、权限和必要数据准备。前端权限控制主要是体验层，服务端仍必须校验权限。守卫要避免每次跳转都重复请求用户信息、避免重定向循环，并对动态路由加载失败有降级路径。
+```ts
+const store = useCounterStore()
+const { count } = store // 可能只是取出当前值
+```
+
+使用 `storeToRefs`：
+
+```ts
+const { count, double } = storeToRefs(store)
+const { increment } = store // action 是稳定函数，可直接解构
+```
+
+批量更新可以使用 `$patch`，让变更意图集中，也方便 Devtools 追踪：
+
+```ts
+store.$patch({ count: store.count + 1 })
+```
+
+持久化不是 Pinia 自动能力。需要明确白名单、版本、过期、迁移和退出清除；登录 Token、权限和用户偏好不能用同一套策略处理，敏感数据也不应无条件写进 localStorage。
+
+## 五、路由守卫为什么不能等于安全
+
+### P0：Vue Router 4 的权限控制怎样设计
+
+路由守卫适合处理进入页面前的认证、页面级权限和必要的前置准备：
 
 ```ts
 router.beforeEach(async (to) => {
@@ -101,8 +121,8 @@ router.beforeEach(async (to) => {
     }
   }
 
-  const requiredRole = to.meta.role
-  if (typeof requiredRole === 'string' && !auth.profile?.roles.includes(requiredRole)) {
+  const role = to.meta.role
+  if (typeof role === 'string' && !auth.profile?.roles.includes(role)) {
     return { name: 'forbidden' }
   }
 
@@ -110,24 +130,30 @@ router.beforeEach(async (to) => {
 })
 ```
 
-### 展开说明
+认证、路由权限、按钮权限和服务端资源授权是四层问题：
 
-动态路由应由可信的权限数据驱动，并避免把任意后端字符串直接映射为可执行组件路径。首次加载权限、刷新恢复、退出后清除动态路由和 404 兜底都需要明确流程。
+```text
+守卫：能否进入页面
+组件/指令：能否看到或操作某个 UI
+服务端：最终是否允许访问资源和执行动作
+```
 
-### 项目表达
+守卫要排除公开路由，避免未登录跳登录页又被自己拦截；动态路由应由可信权限数据驱动，不要把后端任意字符串直接当作可执行组件路径。
 
-我会把“是否登录”“页面权限”“按钮权限”分层：守卫控制路由进入，组件根据权限标识控制可见或可操作状态，服务端作为最终授权者。这样不会把一个前端 `if` 误当成安全边界。
+## 六、URL 参数、Store 和页面数据如何协作
 
-### 可能追问
+```text
+/users/:id       资源身份
+?page=2&status=x 可分享、可恢复的查询条件
+Pinia            跨页面共享且不适合放 URL 的状态
+组件/composable  当前页面的短生命周期数据
+```
 
-- `beforeEach` 为什么容易死循环？未登录跳到登录页时，登录页也被同一条件拦截；需要排除公开路由并验证 redirect 参数。
-- 数据请求都放守卫吗？不一定。影响是否能进入页面的必要数据可在守卫处理，页面主体数据通常由组件或路由加载策略处理，便于显示 skeleton 和错误态。
+进入页面时要定义唯一数据源。如果 URL 和 Store 都维护一份筛选条件，就必须明确初始化、回退和更新方向，否则刷新、前进后退与手动修改会互相覆盖。
 
-## P1：Store 中的异步与错误状态怎么组织？
+## 七、异步状态、错误和取消要一起设计
 
-### 30 秒回答
-
-Store action 可以处理异步，但要把 loading、data、error 与取消/重试策略设计清楚，不能只写一个 `loading = true`。不同资源最好有独立状态，避免一个全局 loading 让无关页面互相影响。
+一个 Store 不应该只有一个全局 `loading`：
 
 ```ts
 type Resource<T> = {
@@ -135,80 +161,38 @@ type Resource<T> = {
   loading: boolean
   error: string | null
 }
-
-const notices = ref<Resource<Notice[]>>({ data: null, loading: false, error: null })
 ```
 
-### 项目表达
+不同资源最好有独立状态，并设计成功、失败、取消、重试和重复调用行为。页面只需要一个列表时，把这套状态放 composable 通常比 Store 更容易清理。异步请求还要防止旧响应覆盖新筛选，可用 AbortController 或请求版本号。
 
-对于服务端数据，我会根据复用范围评估是否需要 Store；若只属于一个页面，页面 composable 通常更轻。无论放在哪里，都要让错误可展示、可重试，避免静默失败。
+## 八、组件 API 怎样避免过度通用
 
-## P1：怎样设计可维护的组件 API？
+组件应暴露最小、语义化的 Props、Events、slot 和样式扩展点，并明确受控/非受控行为。不要为了“通用”堆几十个布尔 prop：变体增加时可以拆组件、使用 slot 或提供一个清晰配置对象。`provide/inject` 适合表单、主题等跨层稳定上下文，不应替代所有全局状态。
 
-### 30 秒回答
+## 九、面试官想听到的话
 
-组件应暴露最小、语义化的 Props 和 Events，并把样式覆盖点、插槽和受控/非受控行为设计清楚。不要为了通用性一次暴露几十个布尔 prop；当变体变多时，应拆组件、使用 slot 或引入清晰的配置对象。
+### 30 秒版本
 
-### 可能追问
+> Pinia 不是所有状态的垃圾桶。我会先按读取范围、生命周期和是否需要刷新/分享来划分：组件负责局部 UI，composable 负责页面逻辑复用，URL 负责可恢复的查询条件，Pinia 负责跨页面共享的用户、权限和应用配置，服务端数据再单独设计缓存和失效。Pinia 由 state、getters 和 actions 组成，直接解构 state/getter 要用 storeToRefs。路由守卫负责体验层的认证和页面权限，服务端仍是最终授权者，还要处理刷新恢复、重定向循环、退出清理和异步错误。
 
-- 什么时候用 provide/inject？适合跨多层组件传递稳定上下文，例如表单或主题；不适合替代所有全局状态，且要防止隐式依赖难追踪。
+### 2 分钟版本
 
-## P0：Pinia 的 Option Store 和 Setup Store 怎么选？
+> 我会先问状态谁读、活多久、是否要分享和是否属于服务端数据。一个列表页的筛选和请求取消通常留在页面 composable；当前用户、权限和租户才进入 Pinia。Store 可以用 Setup 或 Option 形式，actions 负责有边界的业务编排，getters 负责派生结果。使用时不能直接解构 state，否则会丢响应式，要用 storeToRefs；持久化还要有白名单、版本、过期和退出清理。路由层把认证、页面权限和按钮权限分开，守卫不是安全边界，服务端必须再次校验。URL、Store 和组件不要维护同一份真相，进入和离开页面时要明确同步方向。
 
-### 30 秒回答
+## 十、自测与复习卡
 
-Option Store 用 `state/getters/actions` 组织，迁移 Vuex 的团队更容易接受；Setup Store 直接使用 ref、computed 和函数，能复用 Composition API 逻辑，TypeScript 推导也自然。选择应以团队约定、测试方式和业务复杂度为准，不要同一项目无规则混用。
+1. 什么状态应该放 Pinia，什么状态不应该放？
+2. Store 和 composable 的默认生命周期有何不同？
+3. Pinia 为什么需要 storeToRefs？
+4. 路由守卫为什么不能代替服务端鉴权？
+5. URL、Store、组件同时保存筛选条件会产生什么问题？
+6. 持久化 Store 需要哪些失效和清理策略？
 
-```ts
-export const useCounterStore = defineStore('counter', {
-  state: () => ({ count: 0 }),
-  getters: {
-    double: (state) => state.count * 2,
-  },
-  actions: {
-    increment() {
-      this.count += 1
-    },
-  },
-})
+```text
+划分依据：读取范围 + 生命周期 + 可分享性 + 数据来源
+Pinia：state / getters / actions，共享状态容器
+解构：state/getter 用 storeToRefs，action 可直接解构
+路由：认证 -> 页面权限 -> UI 权限 -> 服务端授权
+异步：data / loading / error / cancel / retry
+持久化：白名单、版本、过期、退出清理
 ```
-
-## P0：Pinia 中如何保持解构后的响应式？
-
-### 30 秒回答
-
-直接解构 Store 会丢失 state/getter 的响应式连接；使用 `storeToRefs` 解构 state 和 getters，actions 可以直接解构，因为它们是稳定函数。需要整体替换或批量更新时，可使用 `$patch`，并保持变更意图集中。
-
-```ts
-const store = useCounterStore()
-const { count, double } = storeToRefs(store)
-const { increment } = store
-```
-
-## P0：Pinia 的插件、持久化和 SSR 注意什么？
-
-### 30 秒回答
-
-插件可以添加持久化、审计或通用能力，但持久化必须选择白名单、版本和过期策略，不能把所有 Store 序列化到 localStorage。SSR 场景还要避免把一个用户的 Store 状态泄漏给另一个请求，服务端和客户端需要正确 hydrate。
-
-### 项目表达
-
-登录态、权限和用户偏好要分开处理。退出时清除敏感 Store，持久化插件升级时做版本迁移；如果没有明确需求，宁可不持久化。
-
-## P1：路由参数、query 和 Store 如何协作？
-
-### 30 秒回答
-
-路径参数通常标识资源身份，例如 `/users/:id`；query 适合可分享、可恢复的筛选和分页；Store 适合跨页面共享且不适合放进 URL 的状态。进入页面时定义唯一数据源，避免 URL、Store 和组件各自维护一份互相覆盖。
-
-## P1：如何设计权限模型而不是只做路由拦截？
-
-### 30 秒回答
-
-认证、路由权限、页面元素权限和服务端资源授权是四层问题。路由守卫决定能否进入，按钮指令或组件能力控制可见性，API 服务端校验最终权限和资源归属。前端权限数据还要考虑刷新恢复、过期、租户切换和退出清理。
-
-## P1：Store 如何测试？
-
-### 30 秒回答
-
-纯状态转换和 getter 可直接测试，异步 action 通过请求层边界验证成功、失败、取消和重复调用。测试重点是对外行为和状态结果，不要把测试绑死在 Pinia 内部实现或具体调用次数上。
